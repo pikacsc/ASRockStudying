@@ -27,6 +27,8 @@ typedef _tagPoint POINT;
 typedef _tagPoint* PPOINT;
 
 
+thread bombThread[MAX_BOMB];
+
 void SetMaze(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos, PPOINT pStartPos, PPOINT pEndPos);
 
 /*
@@ -72,11 +74,14 @@ int main()
 	while (GameLoop)
 	{
 		Output(Maze, &tPlayerPos);
+		printf("\nBomb: %d\n", iBombCount);
 		if (tPlayerPos.x == tEndPos.x && tPlayerPos.y == tEndPos.y)
 		{
 			printf("\nGoal! Congratulation!\n");
 			GameLoop ^= 1;
 		}
+		this_thread::sleep_for(chrono::milliseconds(100));
+		if (_kbhit() == 0) continue;
 		cinput = _getch();
 		MovePlayer(Maze, &tPlayerPos, cinput);
 		switch (cinput)
@@ -84,7 +89,9 @@ int main()
 		case 't':
 		case 'T':
 			//Bomb
-			CreateBomb(Maze, &tPlayerPos, tBombPos, &iBombCount);
+			//TODO:자동 실행종료 버그 수정
+			bombThread[iBombCount] = thread(CreateBomb, Maze, &tPlayerPos, tBombPos, &iBombCount);
+			//CreateBomb(Maze, &tPlayerPos, tBombPos, &iBombCount);
 			break;
 		case 'u':
 		case 'U':
@@ -96,7 +103,8 @@ int main()
 			break;
 		}
 	}
-
+	/*for (int i = 0; i < iBombCount; i++)
+		bombThread[i].join();*/
 
 	return 0;
 }
@@ -144,9 +152,11 @@ void Output(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos)
 		for (int j = 0; j < MAZE_WIDTH; j++)
 		{
 			if (Maze[i][j] == '4')
-				printf("♨");
+				printf("◐");
 			else if (Maze[i][j] == '5')
-				printf("◎");
+				printf("◑");
+			else if (Maze[i][j] == '6')
+				printf("▒");
 			else if (pPlayerPos->x == j && pPlayerPos->y == i)
 				printf("☆");
 			else if (Maze[i][j] == '0')
@@ -162,7 +172,7 @@ void Output(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos)
 		printf("\n");
 	}
 	printf("\n");
-	printf("x : %d , y : %d, %c", pPlayerPos->x, pPlayerPos->y, Maze[pPlayerPos->y][pPlayerPos->x]);
+	printf("x : %d , y : %d", pPlayerPos->x, pPlayerPos->y);
 	//change number to graphic char
 }
 
@@ -209,20 +219,60 @@ void MovePlayer(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos, unsigned char cinput
 	}
 }
 
-void CreateBomb(char (*Maze)[MAZE_WIDTH],const PPOINT pPlayer, PPOINT pBombArr, int* pBombCount)
+//void CreateBomb(char (*Maze)[MAZE_WIDTH],const PPOINT pPlayer, PPOINT pBombArr, int* pBombCount)
+//{
+//	if (*pBombCount >= MAX_BOMB) return;
+//	 
+//	for (int i = 0; i < *pBombCount; i++)
+//	{
+//		if (pBombArr[i].x == pPlayer->x && pBombArr[i].y == pPlayer->y) return;
+//	}
+//
+//	pBombArr[*pBombCount] = *pPlayer;
+//	++(*pBombCount);
+//
+//	//Bomb animation
+//	Maze[pPlayer->y][pPlayer->x] = '4';
+//}
+
+void CreateBomb(char(*Maze)[MAZE_WIDTH], const PPOINT pPlayer, PPOINT pBombArr, int* pBombCount)
 {
 	if (*pBombCount >= MAX_BOMB) return;
-	 
+	
 	for (int i = 0; i < *pBombCount; i++)
 	{
 		if (pBombArr[i].x == pPlayer->x && pBombArr[i].y == pPlayer->y) return;
 	}
 
-	pBombArr[*pBombCount] = *pPlayer;
 	++(*pBombCount);
+	int SleepCount = 0;
 
-	Maze[pPlayer->y][pPlayer->x] = '4';
+
+	pBombArr[*pBombCount].x = pPlayer->x;
+	pBombArr[*pBombCount].y = pPlayer->y;
+	int bomb_x = pBombArr[*pBombCount].x;
+	int bomb_y = pBombArr[*pBombCount].y;
+ 
+	//Bomb animation
+	while (SleepCount < 5)
+	{
+		Maze[bomb_y][bomb_x] = '5';
+		this_thread::sleep_for(chrono::milliseconds(1000));
+		Maze[bomb_y][bomb_x] = '4';
+		this_thread::sleep_for(chrono::milliseconds(1000));
+		SleepCount++;
+	}
+	Maze[bomb_y][bomb_x] = '6';
+	Maze[bomb_y-1][bomb_x-1] = '6';
+	Maze[bomb_y+1][bomb_x+1] = '6';
+	this_thread::sleep_for(chrono::milliseconds(500));
+
+
+	Fire(Maze, pPlayer, pBombArr, pBombCount);
+	return;
 }
+
+
 
 void Fire(char(*Maze)[MAZE_WIDTH], PPOINT pPlayer, PPOINT pBombArr, int* pBombCount)
 {
@@ -266,10 +316,12 @@ void Fire(char(*Maze)[MAZE_WIDTH], PPOINT pPlayer, PPOINT pBombArr, int* pBombCo
 			if (Maze[pBombArr[i].y][pBombArr[i].x + 1] == '0')
 				Maze[pBombArr[i].y][pBombArr[i].x + 1] = '1';
 		}
+		//TODO:범위 십자로 수정
 		Maze[pBombArr[i].y][pBombArr[i].x] = '1';
+		Maze[pBombArr[i].y-1][pBombArr[i].x-1] = '1';
+		Maze[pBombArr[i].y+1][pBombArr[i].x+1] = '1';
 	}
-
-	*pBombCount = 0;
+	--(*pBombCount);
 }
 
 void MoveUp(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos)
