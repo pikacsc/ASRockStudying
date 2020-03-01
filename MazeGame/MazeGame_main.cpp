@@ -90,7 +90,7 @@ int main()
 		case 'T':
 			//Bomb
 			//TODO:자동 실행종료 버그 수정
-			bombThread[iBombCount] = thread(CreateBomb, Maze, &tPlayerPos, tBombPos, &iBombCount);
+			//bombThread[iBombCount] = thread(CreateBomb, Maze, &tPlayerPos, tBombPos, &iBombCount);
 			//CreateBomb(Maze, &tPlayerPos, tBombPos, &iBombCount);
 			break;
 		case 'u':
@@ -111,35 +111,105 @@ int main()
 
 void SetMaze(char(*Maze)[MAZE_WIDTH], PPOINT pPlayerPos, PPOINT pStartPos, PPOINT pEndPos)
 {
-	pStartPos->x = 1;
-	pStartPos->y = 1;
+	//open MazeList.txt
+	FILE* pFile = NULL;
 
-	pEndPos->x = 17;
-	pEndPos->y = 18;
+	int error = fopen_s(&pFile, "MazeList.txt","rt");
 
-	*pPlayerPos = *pStartPos;
+	char** pMazeList = NULL;
 
-	//use stycpy_s()
-	strcpy_s(Maze[0], "0000000000000000000");
-	strcpy_s(Maze[1], "0211111111111111110");
-	strcpy_s(Maze[2], "0000000000000000010");
-	strcpy_s(Maze[3], "0111111111011111110");
-	strcpy_s(Maze[4], "0100010101000010000");
-	strcpy_s(Maze[5], "0100010101111111110");
-	strcpy_s(Maze[6], "0111010100000101010");
-	strcpy_s(Maze[7], "0001010111111101010");
-	strcpy_s(Maze[8], "0001010000100001010");
-	strcpy_s(Maze[9], "0001111110100001000");
-	strcpy_s(Maze[10], "0001010101000011110");
-	strcpy_s(Maze[11], "0101010101000000000");
-	strcpy_s(Maze[12], "0101010101011111110");
-	strcpy_s(Maze[13], "0111010101010000010");
-	strcpy_s(Maze[14], "0100011101110111010");
-	strcpy_s(Maze[15], "0100000000100001010");
-	strcpy_s(Maze[16], "0111111000100011110");
-	strcpy_s(Maze[17], "0100001000100010000");
-	strcpy_s(Maze[18], "0111111111110011130");
-	strcpy_s(Maze[19], "0000000000000000000");
+	if (!pFile || error != 0)
+	{
+		printf("\nError : Can't read file on SetMaze() \n");
+		exit(1);
+	}
+
+	char cCount = 0;
+	fread(&cCount, 1, 1, pFile);
+	int iMazeCount = atoi(&cCount);
+	fread(&cCount, 1, 1, pFile);
+
+	// char * 배열을 미로 갯수 만큼 할당
+	pMazeList = new char* [iMazeCount] { 0 };
+
+	int iNameCount = 0;
+
+	for (int i = 0; i < iMazeCount; ++i)
+	{
+		iNameCount = 0;
+
+		// 현재 미로의 파일이름(파일 경로 포함)을 저장할 배열을 256개로 할당
+		//256으로 넉넉하게 잡기
+		pMazeList[i] = new char[256];
+
+		while (1)
+		{
+			fread(&cCount, 1, 1, pFile);
+			if (cCount != '\n')
+			{
+				pMazeList[i][iNameCount] = cCount;
+				++iNameCount;
+			}
+			else
+			{
+				break;
+			}
+		}
+		//파일 이름을 모두 읽었다면 문자열의 마지막에 0을
+			//넣어서 이문자열의 끝을 알려준다.
+		pMazeList[i][iNameCount] = 0;
+		
+	}
+	fclose(pFile);
+	
+
+	// 읽을 파일 목록을 만들어졌으므로
+	// 각 파일중 하나를 선택해서 미로를 읽어와서 설정함
+	for (int i = 0; i < iMazeCount; ++i)
+	{
+		std::cout << i + 1 << ". " << pMazeList[i] << std::endl;
+	}
+
+	std::cout << "choose maze : ";
+	int iSelect = 0;
+	cin >> iSelect;
+
+	error = fopen_s(&pFile, pMazeList[iSelect - 1], "rt");
+
+	if (!pFile || error != 0)
+	{
+		printf("\nError : Can't read file on MazeFile \n");
+		exit(1);
+	}
+
+	// 미로의 세로 줄 수 만큼 반복하며 각 줄 별로 읽어온다.
+	for (int i = 0; i < 20; i++)
+	{
+		fread(Maze[i], 1, 20, pFile);
+
+		// 현재 줄의 미로를 검사하여 시작점 혹은
+		// 도착점이 있는지를 판단
+		for (int j = 0; j < 20; j++)
+		{
+			//시작점일 경우
+			if (Maze[i][j] == '2')
+			{
+				pStartPos->x = j;
+				pStartPos->y = i;
+
+				*pPlayerPos = *pStartPos;
+
+			}
+			// 도착점일 경우
+			else if (Maze[i][j] == '3')
+			{
+				pEndPos->x = j;
+				pEndPos->y = i;
+			}
+		}
+
+	}
+
 }
 
 
