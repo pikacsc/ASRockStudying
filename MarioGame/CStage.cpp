@@ -13,8 +13,9 @@ enum eSTAGE_BLOCK_TYPE
 };
 
 CStage::CStage()
-	:m_cStage{ 0 }
+	:m_cStage{ 0 }, m_startPOS(POINT{ 0,0 }), m_goalPOS(POINT{ 0,0 })
 {
+	Init();
 }
 
 CStage::~CStage()
@@ -24,6 +25,24 @@ CStage::~CStage()
 
 bool CStage::Init()
 {
+	if (m_cStage[0][0] == 0)
+	{
+		return false;
+	}
+	for (int i = 0; i <= g_iMAP_WIDTH; ++i)
+	{
+		for (int j = 0; j < g_iMAP_HEIGHT; ++j)
+		{
+			if (m_cStage[i][j] == SBT_START)
+			{
+				m_startPOS = POINT{ j,i };
+			}
+			else if (m_cStage[i][j] == SBT_END)
+			{
+				m_goalPOS = POINT{ j,i };
+			}
+		}
+	}
 	return true;
 }
 
@@ -57,8 +76,6 @@ void CStage::Update()
 	ApplyGravity(m_cStage, pPlayer);
 	ApplyPhysics(m_cStage, pPlayer);
 	UpdateCoin(m_cStage, pPlayer);
-
-
 }
 
 //중력작용, 땅위에 있는지 체크
@@ -106,7 +123,7 @@ void ApplyPhysics(const char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
 	}
 }
 
-void UpdateCoin(char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
+static void UpdateCoin(char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
 {
 
 	int player_iX = _pPlayer->GetX();
@@ -186,5 +203,17 @@ void CStage::Render()
 		std::cout << std::endl;
 	}
 	std::cout << "coin : "<< player_Coin << std::endl;
+	std::cout << "Left : ← " << " Right : → " << std::endl;
+	std::cout << "Jump : space bar "<< std::endl;
 }
 
+
+POINT CStage::GetGoalPos(void) const
+{
+	return m_goalPOS;
+}
+
+POINT CStage::GetStartPos(void) const
+{
+	return m_startPOS;
+}

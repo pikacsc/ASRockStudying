@@ -2,7 +2,7 @@
 #include "value.h"
 
 CPlayer::CPlayer()
-	:m_iX(0),m_iY(0),m_bIsOnGround(true),m_iCoin(0),m_bLeftBlock(true),m_bRightBlock(false)
+	:m_tPos(POINT{ 0,0 }), m_bOnGround(true), m_iCoin(0), m_bLeftBlock(true), m_bRightBlock(false)
 {
 
 }
@@ -13,23 +13,34 @@ CPlayer::~CPlayer()
 
 int CPlayer::GetX() const
 {
-	return m_iX;
+	return m_tPos.x;
 }
 
 void CPlayer::SetX(int _iX)
 {
-	m_iX = _iX;
+	m_tPos.x = _iX;
 }
 
 int CPlayer::GetY() const
 {
-	return m_iY;
+	return m_tPos.y;
 }
 
 void CPlayer::SetY(int _iY)
 {
-	m_iY = _iY;
+	m_tPos.y = _iY;
 }
+
+POINT CPlayer::GetPos() const
+{
+	return m_tPos;
+}
+
+void CPlayer::SetPos(const POINT& _tPos)
+{
+	m_tPos = _tPos;
+}
+
 
 int CPlayer::GetCoin() const
 {
@@ -57,20 +68,21 @@ void CPlayer::MinusCoin()
 	m_iCoin--;
 }
 
-void CPlayer::SetPosition(int _iX, int _iY)
+
+void CPlayer::SetPosByXY(int _iX, int _iY)
 {
-	m_iX = _iX;
-	m_iY = _iY;
+	m_tPos.x = _iX;
+	m_tPos.y = _iY;
 }
 
 bool CPlayer::IsOnGround() const
 {
-	return m_bIsOnGround;
+	return m_bOnGround;
 }
 
 void CPlayer::SetOnGround(bool _bOnGround)
 {
-	m_bIsOnGround = _bOnGround;
+	m_bOnGround = _bOnGround;
 }
 
 bool CPlayer::IsLeftBlock() const
@@ -95,8 +107,6 @@ void CPlayer::SetRightBlock(bool _bRightBlock)
 
 bool CPlayer::Init()
 {
-	m_iX = g_iSTART_POS_X;
-	m_iY = g_iSTART_POS_Y;
 
 	return true;
 }
@@ -104,12 +114,10 @@ bool CPlayer::Init()
 void CPlayer::Update()
 {
 	//중력작용, 플레이어 밑에 땅이 없을 경우 플레이어 y축을 ++
-	if (!m_bIsOnGround)
+	if (!m_bOnGround)
 	{
-		++m_iY;
+		++m_tPos.y;
 	}
-
-
 
 	//키 입력을 받는다.
 	//GeyAsyncKeyState 함수는 Win32 API 에서 제공되는 키 입력 함수이다.
@@ -122,11 +130,11 @@ void CPlayer::Update()
 			return;
 		}
 
-		--m_iX;
+		--m_tPos.x;
 
-		if (m_iX < 0)
+		if (m_tPos.x < 0)
 		{
-			m_iX = 0;
+			m_tPos.x = 0;
 		}
 	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
@@ -136,19 +144,19 @@ void CPlayer::Update()
 			return;
 		}
 
-		++m_iX;
+		++m_tPos.x;
 
-		if (m_iX > g_iMAP_WIDTH)
+		if (m_tPos.x > g_iMAP_WIDTH)
 		{
-			m_iX = g_iMAP_WIDTH - 1;
+			m_tPos.x = g_iMAP_WIDTH - 1;
 		}
 	}
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
-		--m_iY;
-		if (m_iY < 0)
+		--m_tPos.y;
+		if (m_tPos.y < 0)
 		{
-			m_iY = 0;
+			m_tPos.y = 0;
 		}
 	}
 }

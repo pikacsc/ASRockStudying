@@ -1,6 +1,6 @@
 #pragma once
 #include "value.h"
-
+class CStage;
 class CObjectManager
 {
 private:
@@ -25,5 +25,8 @@ public:
 
 public:
 	bool Init();
+	void Update();
+
+	void InitPlayerStartPos(void);
 };
 

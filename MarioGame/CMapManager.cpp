@@ -5,7 +5,7 @@ CMapManager* CMapManager::m_pInst = nullptr;
 const char CMapManager::m_StageNameArr[][g_iSTAGENAME_MAX] = { "Stage1.txt", "Stage2.txt", "Stage3.txt" };
 
 CMapManager::CMapManager()
-	:m_pStage{}
+	:m_pStage{},m_iSelectStageNum(0)
 {
 	for (int i = 0; i < g_iSTAGE_MAX_COUNT; ++i)
 	{
@@ -47,7 +47,7 @@ void CMapManager::DestroyInst()
 
 bool CMapManager::Init()
 {
-	
+	//모든맵 초기화
 	for (int i = 0; i < g_iSTAGE_MAX_COUNT; ++i)
 	{
 		m_pStage[i] = new CStage;
@@ -57,20 +57,32 @@ bool CMapManager::Init()
 			printf("\nMapManager::init() failed\n");
 			return false;
 		}
+		m_pStage[i]->Init();
 	}
+	
 	return true;
 }
 
 void CMapManager::Update()
 {
-	m_pStage[0]->Update();
+	m_pStage[m_iSelectStageNum]->Update();
 }
 
 void CMapManager::Render()
 {
-	m_pStage[0]->Render();
+	m_pStage[m_iSelectStageNum]->Render();
 }
 
 void CMapManager::Run()
 {
+}
+
+void CMapManager::SetSelectStage(int _iStageNum)
+{
+	m_iSelectStageNum = _iStageNum;
+}
+
+CStage* CMapManager::GetSelectStage(void) const
+{
+	return m_pStage[m_iSelectStageNum];
 }

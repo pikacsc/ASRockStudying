@@ -1,4 +1,6 @@
 #include "value.h"
+#include "CStage.h"
+#include "CMapManager.h"
 #include "CObjectManager.h"
 #include "CPlayer.h"
 
@@ -44,4 +46,15 @@ bool CObjectManager::Init()
 	m_pPlayer->Init();
 
 	return true;
+}
+
+void CObjectManager::Update()
+{
+	m_pPlayer->Update();
+}
+
+void CObjectManager::InitPlayerStartPos(void)
+{
+	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
+	m_pPlayer->SetPos(selectStage->GetStartPos());
 }

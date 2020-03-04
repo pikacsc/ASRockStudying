@@ -28,6 +28,9 @@
     <Filter Include="03. Object">
       <UniqueIdentifier>{11e3675d-7add-44b3-a78b-f14f509ea55e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. State">
+      <UniqueIdentifier>{3e4d249c-1e79-49f9-91df-269bd7f4331b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MarioGame_main.cpp">
@@ -54,6 +57,9 @@
     <ClCompile Include="value.cpp">
       <Filter>00. value</Filter>
     </ClCompile>
+    <ClCompile Include="CStateManager.cpp">
+      <Filter>04. State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CStage.h">
@@ -76,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="CObjectManager.h">
       <Filter>03. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CStateManager.h">
+      <Filter>04. State</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

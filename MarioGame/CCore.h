@@ -2,7 +2,6 @@
 
 #include "value.h"
 
-
 class CCore
 {
 private:

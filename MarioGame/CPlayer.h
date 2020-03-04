@@ -1,4 +1,6 @@
 #pragma once
+#include "value.h"
+
 class CPlayer
 {
 public:
@@ -6,33 +8,34 @@ public:
 	~CPlayer();
 
 private:
-	int		m_iX;
-	int		m_iY;
+	POINT	m_tPos;
 	int		m_iCoin;
-	bool	m_bIsOnGround;
+	bool	m_bOnGround;
 	bool	m_bLeftBlock;
 	bool	m_bRightBlock;
+	
+public:
+	int		GetX() const;
+	void	SetX(int _iX);
+	int		GetY() const;
+	void	SetY(int _iY);
+	POINT	GetPos() const;
+	void	SetPos(const POINT& _tPos);
+	void	SetPosByXY(int _iX, int _iY);
+	int		GetCoin() const;
+	void	PlusCoin();
+	void	MinusCoin();
+
+	bool	IsOnGround() const;
+	void	SetOnGround(bool _bOnGround);
+
+	bool	IsLeftBlock() const;
+	void	SetLeftBlock(bool _bLeftBlock);
+	bool	IsRightBlock() const;
+	void	SetRightBlock(bool _bRightBlock);
 
 public:
-	int GetX() const;
-	void SetX(int _iX);
-	int GetY() const;
-	void SetY(int _iY);
-	int GetCoin() const;
-	void PlusCoin();
-	void MinusCoin();
-
-	void SetPosition(int _iX, int _iY);
-	bool IsOnGround() const;
-	void SetOnGround(bool _bOnGround);
-
-	bool IsLeftBlock() const;
-	void SetLeftBlock(bool _bLeftBlock);
-	bool IsRightBlock() const;
-	void SetRightBlock(bool _bRightBlock);
-
-public:
-	bool	Init();
+	bool    Init();
 	void	Update();
 };
 

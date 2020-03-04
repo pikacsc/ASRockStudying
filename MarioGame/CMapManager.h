@@ -21,6 +21,7 @@ private:
 private:
 	static CMapManager* m_pInst;
 	static const char m_StageNameArr[][g_iSTAGENAME_MAX];
+	int		m_iSelectStageNum;
 public:
 	static CMapManager* GetInst();
 	static void DestroyInst();
@@ -33,5 +34,8 @@ public:
 	void Update();
 	void Render();
 	void Run();
+
+	void SetSelectStage(int _iStageNum);
+	CStage* GetSelectStage(void) const;
 };
 

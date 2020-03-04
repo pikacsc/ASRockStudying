@@ -1,6 +1,7 @@
 #include "CCore.h"
 #include "CMapManager.h"
 #include "CObjectManager.h"
+#include "CStateManager.h"
 #include "CPlayer.h"
 
 CCore* CCore::m_pInst = NULL;
@@ -53,22 +54,39 @@ bool CCore::Init()
 		return false;
 	}
 
+	//게임 스테이트 관리자 초기화
+	if (!CStateManager::GetInst()->Init())
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void CCore::Run()
 {
-	//CMapManager::GetInst()->Render();
-	CPlayer* pPlayer = CObjectManager::GetInst()->GetPlayer();
+	int iInput = 0;
+	std::cout << "Stage Select" << std::endl;
+	std::cout << "1. Stage1" << std::endl;
+	std::cout << "2. Stage2" << std::endl;
+	std::cout << "3. Stage3" << std::endl << ">>";
+	std::cin >> iInput;
+	
 
+	CMapManager::GetInst()->SetSelectStage(iInput);
+	CObjectManager::GetInst()->InitPlayerStartPos();
 	while (true)
 	{
 		system("cls");
-
-		pPlayer->Update();
-
 		CMapManager::GetInst()->Update();
 		CMapManager::GetInst()->Render();
+		CObjectManager::GetInst()->Update();
+		CStateManager::GetInst()->Update();
+		if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+		{
+			CStateManager::GetInst()->Render();
+			break;
+		}
 		Sleep(100); //Sleep(밀리세컨드) 밀리세컨드 만큼 쉬기
 	}
 }
