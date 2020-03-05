@@ -3,6 +3,7 @@
 #include "CObjectManager.h"
 #include "CStateManager.h"
 #include "CPlayer.h"
+#include <conio.h>
 
 CCore* CCore::m_pInst = NULL;
 
@@ -65,28 +66,49 @@ bool CCore::Init()
 
 void CCore::Run()
 {
-	int iInput = 0;
-	std::cout << "Stage Select" << std::endl;
-	std::cout << "1. Stage1" << std::endl;
-	std::cout << "2. Stage2" << std::endl;
-	std::cout << "3. Stage3" << std::endl << ">>";
-	std::cin >> iInput;
-	
+	bool bSystemLoop = true;
+	bool bPlayLoop = true;
 
-	CMapManager::GetInst()->SetSelectStage(iInput);
-	CObjectManager::GetInst()->InitPlayerStartPos();
-	while (true)
+	while (bSystemLoop)
 	{
 		system("cls");
-		CMapManager::GetInst()->Update();
-		CMapManager::GetInst()->Render();
-		CObjectManager::GetInst()->Update();
-		CStateManager::GetInst()->Update();
-		if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+		int iInput = 0;
+		std::cout << "Stage Select" << std::endl;
+		std::cout << "1. Stage1" << std::endl;
+		std::cout << "2. Stage2" << std::endl;
+		std::cout << "3. Stage3" << std::endl;
+		std::cout << "0. Quit" << std::endl << ">>";
+		std::cin >> iInput;
+
+		if (iInput > 3)
 		{
-			CStateManager::GetInst()->Render();
+			continue;
+		}
+
+		if (iInput == 0)
+		{
 			break;
 		}
-		Sleep(100); //Sleep(밀리세컨드) 밀리세컨드 만큼 쉬기
+
+
+		--iInput; //스테이지를 갖고있는 배열은 0번부터 시작하므로, 1 빼기
+		CMapManager::GetInst()->SetSelectStage(iInput);
+		CObjectManager::GetInst()->InitPlayerStartPos();
+		while (bPlayLoop)
+		{
+			system("cls");
+			CStateManager::GetInst()->Update();
+			if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+			{
+				CStateManager::GetInst()->Render();
+				break;
+			}
+			CMapManager::GetInst()->Update();
+			CMapManager::GetInst()->Render();
+			CObjectManager::GetInst()->Update();
+			Sleep(100); //Sleep(밀리세컨드) 밀리세컨드 만큼 쉬기
+		}
+		CStateManager::GetInst()->ResetGameState();
 	}
+
 }

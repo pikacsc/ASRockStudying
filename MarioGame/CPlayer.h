@@ -13,7 +13,7 @@ private:
 	bool	m_bOnGround;
 	bool	m_bLeftBlock;
 	bool	m_bRightBlock;
-	
+	int		m_iLife;
 public:
 	int		GetX() const;
 	void	SetX(int _iX);
@@ -28,12 +28,13 @@ public:
 
 	bool	IsOnGround() const;
 	void	SetOnGround(bool _bOnGround);
-
 	bool	IsLeftBlock() const;
 	void	SetLeftBlock(bool _bLeftBlock);
 	bool	IsRightBlock() const;
 	void	SetRightBlock(bool _bRightBlock);
-
+	int		GetLifeCount(void) const;
+	void	SetLifeCount(int _iLife);
+	void	MinusLife(void);
 public:
 	bool    Init();
 	void	Update();

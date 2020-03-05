@@ -2,7 +2,7 @@
 #include "value.h"
 
 CPlayer::CPlayer()
-	:m_tPos(POINT{ 0,0 }), m_bOnGround(true), m_iCoin(0), m_bLeftBlock(true), m_bRightBlock(false)
+	:m_tPos(POINT{ 0,0 }), m_bOnGround(true), m_iCoin(0), m_bLeftBlock(true), m_bRightBlock(false), m_iLife(0)
 {
 
 }
@@ -103,6 +103,21 @@ bool CPlayer::IsRightBlock() const
 void CPlayer::SetRightBlock(bool _bRightBlock)
 {
 	m_bRightBlock = _bRightBlock;
+}
+
+int CPlayer::GetLifeCount(void) const
+{
+	return m_iLife;
+}
+
+void CPlayer::SetLifeCount(int _iLife)
+{
+	m_iLife = _iLife;
+}
+
+void CPlayer::MinusLife(void)
+{
+	--m_iLife;
 }
 
 bool CPlayer::Init()

@@ -160,7 +160,7 @@ void CStage::Render()
 	// 세로는 플레이어 2칸위부터 한칸 아래까지 출력
 	// 총 4줄이 출력되는것이다
 	// 가로는 플레이어 위치부터 오른쪽 10칸 까지 출력함
-	constexpr int iClientPadding_left		= 0;
+	constexpr int iClientPadding_left		= -2;
 	constexpr int iClientPadding_Top		= -2;
 	constexpr int iClientPadding_Right		= 9;
 	constexpr int iClientPadding_Bottom		= 1;
@@ -169,6 +169,31 @@ void CStage::Render()
 	int iClientHeight_end = player_iY + iClientPadding_Bottom;
 	int iClientWidth_start = player_iX + iClientPadding_left;
 	int iClientWidth_end = player_iX + iClientPadding_Right;
+
+
+	//맵 끝에 거의 도달했을때 가로 스크롤 멈춤
+	if (iClientWidth_start >= g_iMAP_WIDTH - iClientPadding_Right)
+	{
+		iClientWidth_start = g_iMAP_WIDTH - iClientPadding_Right;
+	}
+
+	if (iClientWidth_end > g_iMAP_WIDTH)
+	{
+		iClientWidth_end = g_iMAP_WIDTH;
+	}
+	
+
+
+	//세로 스크롤 멈춤
+	if (iClientHeight_start < 0)
+	{
+		iClientHeight_start = 0;
+	}
+
+	if (iClientHeight_end > g_iMAP_HEIGHT)
+	{
+		iClientHeight_end = g_iMAP_HEIGHT + iClientPadding_Bottom;
+	}
 
 
 	for (int i = iClientHeight_start; i <= iClientHeight_end; ++i)
@@ -206,6 +231,10 @@ void CStage::Render()
 	std::cout << "Left : ← " << " Right : → " << std::endl;
 	std::cout << "Jump : space bar "<< std::endl;
 }
+
+
+
+
 
 
 POINT CStage::GetGoalPos(void) const

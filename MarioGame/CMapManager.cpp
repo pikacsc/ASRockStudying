@@ -1,4 +1,5 @@
 #include "CMapManager.h"
+#include "CStateManager.h"
 #include "CStage.h"
 
 CMapManager* CMapManager::m_pInst = nullptr;
@@ -70,6 +71,10 @@ void CMapManager::Update()
 
 void CMapManager::Render()
 {
+	if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+	{
+		return;
+	}
 	m_pStage[m_iSelectStageNum]->Render();
 }
 

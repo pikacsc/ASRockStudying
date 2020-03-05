@@ -10,4 +10,7 @@ enum constants
 	g_iSTAGENAME_MAX = 50,
 	g_iSTART_POS_X = 4,
 	g_iSTART_POS_Y = 8,
+	g_iLife_Default = 3
 };
+
+
