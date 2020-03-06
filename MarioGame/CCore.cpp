@@ -98,14 +98,25 @@ void CCore::Run()
 		{
 			system("cls");
 			CStateManager::GetInst()->Update();
-			if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+			//TODO: 게임오버 안되는 버그 수정
+			eGAME_STATE gameState = CStateManager::GetInst()->GetGameState();
+			switch (gameState)
 			{
-				CStateManager::GetInst()->Render();
+			case eGAME_STATE::GAME_OVER:
+				bPlayLoop = false;
+				continue;
+				break;
+			case eGAME_STATE::GAME_STAGECLEAR:
+				bPlayLoop = false;
+				continue;
+				break;
+			case eGAME_STATE::GAME_RETRY:
+			default:
 				break;
 			}
-			CMapManager::GetInst()->Update();
 			CMapManager::GetInst()->Render();
 			CObjectManager::GetInst()->Update();
+			CObjectManager::GetInst()->GetPlayer()->Render();
 			Sleep(100); //Sleep(밀리세컨드) 밀리세컨드 만큼 쉬기
 		}
 		CStateManager::GetInst()->ResetGameState();

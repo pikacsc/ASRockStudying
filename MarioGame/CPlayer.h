@@ -38,5 +38,6 @@ public:
 public:
 	bool    Init();
 	void	Update();
+	void	Render();
 };
 

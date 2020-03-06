@@ -9,7 +9,7 @@ private:
 
 private:
 	static CStateManager* m_pInst;
-	
+	eGAME_STATE m_eGameSate;
 	bool	m_bPlayerWin;
 	bool	m_bGameOver;
 public:
@@ -25,6 +25,10 @@ public:
 	bool IsPlayerWin();
 	bool IsGameOver();
 
+	eGAME_STATE GetGameState(void) const;
+	void SetGameState(const eGAME_STATE& _eGameState);
+
 	void ResetGameState();
+
 };
 

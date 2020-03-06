@@ -7,7 +7,7 @@
 CStateManager* CStateManager::m_pInst = nullptr;
 
 CStateManager::CStateManager()
-	:m_bGameOver(false),m_bPlayerWin(false)
+	:m_bGameOver(false),m_bPlayerWin(false),m_eGameSate(eGAME_STATE::GAME_RETRY)
 {
 }
 
@@ -88,6 +88,16 @@ bool CStateManager::IsPlayerWin()
 bool CStateManager::IsGameOver()
 {
 	return m_bGameOver;
+}
+
+eGAME_STATE CStateManager::GetGameState(void) const
+{
+	return m_eGameSate;
+}
+
+void CStateManager::SetGameState(const eGAME_STATE& _eGameState)
+{
+	m_eGameSate = _eGameState;
 }
 
 void CStateManager::ResetGameState()

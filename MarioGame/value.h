@@ -13,4 +13,23 @@ enum constants
 	g_iLife_Default = 3
 };
 
+enum class eSTAGE_BLOCK_TYPE 
+{
+	SBT_WALL = '0',
+	SBT_ROAD = '1',
+	SBT_START = '2',
+	SBT_END = '3',
+	SBT_COIN = '4'
+};
 
+enum class eGAME_STATE
+{
+	//default state : GAME_RETRY
+	GAME_RETRY = 0,
+
+	//zero life state : GAME_OVER
+	GAME_OVER = 1,
+
+	//head to next level state : GAME_STAGECLEAR
+	GAME_STAGECLEAR = 2
+};

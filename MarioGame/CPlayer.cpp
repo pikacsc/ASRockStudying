@@ -1,4 +1,6 @@
 #include "CPlayer.h"
+#include "CMapManager.h"
+#include "CStage.h"
 #include "value.h"
 
 CPlayer::CPlayer()
@@ -10,6 +12,10 @@ CPlayer::CPlayer()
 CPlayer::~CPlayer()
 {
 }
+
+static void UpdateCoin(CPlayer& _pPlayer);
+static void ApplyPhysics(CPlayer& _pPlayer);
+static void RenderPlayerState(CPlayer& _Player);
 
 int CPlayer::GetX() const
 {
@@ -122,12 +128,15 @@ void CPlayer::MinusLife(void)
 
 bool CPlayer::Init()
 {
-
+	m_iLife = g_iLife_Default;
+	m_iCoin = 0;
 	return true;
 }
 
 void CPlayer::Update()
 {
+	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
+
 	//중력작용, 플레이어 밑에 땅이 없을 경우 플레이어 y축을 ++
 	if (!m_bOnGround)
 	{
@@ -174,4 +183,88 @@ void CPlayer::Update()
 			m_tPos.y = 0;
 		}
 	}
+
+	UpdateCoin(*this);
+	ApplyPhysics(*this);
+}
+
+void CPlayer::Render()
+{
+	RenderPlayerState(*this);
+}
+
+
+static void UpdateCoin(CPlayer& _Player)
+{
+	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
+	eSTAGE_BLOCK_TYPE playerPosBlock = selectStage->GetBlockByPos(_Player.GetPos());
+	
+	if (playerPosBlock == eSTAGE_BLOCK_TYPE::SBT_COIN)
+	{
+		selectStage->SetBlockByPos(_Player.GetPos(), eSTAGE_BLOCK_TYPE::SBT_ROAD);
+		_Player.PlusCoin();
+	}
+}
+
+static void ApplyPhysics(CPlayer& _Player)
+{
+	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
+	
+	//벽 못통과 되게 하기
+	int player_Left = _Player.GetX() - 1;
+	
+	int player_Right = _Player.GetX() + 1;
+
+	int player_iY = _Player.GetY();
+
+	eSTAGE_BLOCK_TYPE leftBlock = selectStage->GetBlockByXY(player_Left, player_iY);
+	eSTAGE_BLOCK_TYPE rightBlock = selectStage->GetBlockByXY(player_Right, player_iY);
+
+	if (leftBlock == eSTAGE_BLOCK_TYPE::SBT_WALL)
+	{
+		_Player.SetLeftBlock(true);
+	}
+	else
+	{
+		_Player.SetLeftBlock(false);
+	}
+
+	if (rightBlock == eSTAGE_BLOCK_TYPE::SBT_WALL)
+	{
+		_Player.SetRightBlock(true);
+	}
+	else
+	{
+		_Player.SetRightBlock(false);
+	}
+
+	//중력
+	//플레이어의 x,y 좌표를 얻어온뒤 바로 밑에 땅인지, 허공인지 체크
+	int player_iX = _Player.GetX();
+	int player_Bottom = _Player.GetY() + 1;
+
+	eSTAGE_BLOCK_TYPE bottomBlock = selectStage->GetBlockByXY(player_iX, player_Bottom);
+
+	if (bottomBlock != eSTAGE_BLOCK_TYPE::SBT_WALL)
+	{
+		_Player.SetOnGround(false);
+	}
+	else
+	{
+		_Player.SetOnGround(true);
+	}
+}
+
+static void RenderPlayerState(CPlayer& _Player)
+{
+	int playerCoin = _Player.GetCoin();
+	int playerLife = _Player.GetLifeCount();
+	std::cout << "coin : " << playerCoin << std::endl;
+	std::cout << "Life : ";
+	for (int i = 0; i < playerLife; i++)
+	{
+		std::cout << "♥";
+	}
+	std::cout << std::endl << "Left : ← " << " Right : → " << std::endl;
+	std::cout << "Jump : space bar " << std::endl;
 }

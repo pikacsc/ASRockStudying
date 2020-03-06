@@ -3,14 +3,6 @@
 #include "CPlayer.h"
 #include "CObjectManager.h"
 
-enum eSTAGE_BLOCK_TYPE
-{
-	SBT_WALL = '0',
-	SBT_ROAD = '1',
-	SBT_START = '2',
-	SBT_END = '3',
-	SBT_COIN = '4'
-};
 
 CStage::CStage()
 	:m_cStage{ 0 }, m_startPOS(POINT{ 0,0 }), m_goalPOS(POINT{ 0,0 })
@@ -33,11 +25,11 @@ bool CStage::Init()
 	{
 		for (int j = 0; j < g_iMAP_HEIGHT; ++j)
 		{
-			if (m_cStage[i][j] == SBT_START)
+			if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_START))
 			{
 				m_startPOS = POINT{ j,i };
 			}
-			else if (m_cStage[i][j] == SBT_END)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_END))
 			{
 				m_goalPOS = POINT{ j,i };
 			}
@@ -65,76 +57,9 @@ bool CStage::ReadFile(const char* _pFileName)
 	return true;
 }
 
-
-static void ApplyGravity(const char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer);
-static void ApplyPhysics(const char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer);
-static void UpdateCoin(char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer);
-
 void CStage::Update()
 {
-	CPlayer* pPlayer = CObjectManager::GetInst()->GetPlayer();
-	ApplyGravity(m_cStage, pPlayer);
-	ApplyPhysics(m_cStage, pPlayer);
-	UpdateCoin(m_cStage, pPlayer);
-}
-
-//중력작용, 땅위에 있는지 체크
-static void ApplyGravity(const char (*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
-{
-
-	//플레이어의 x,y 좌표를 얻어온뒤 바로 밑에 땅인지, 허공인지 체크
-	int player_iX = _pPlayer->GetX();
-	int player_Bottom = _pPlayer->GetY() + 1;
-	if (_cStage[player_Bottom][player_iX] != SBT_WALL)
-	{
-		_pPlayer->SetOnGround(false);
-	}
-	else
-	{
-		_pPlayer->SetOnGround(true);
-	}
-}
-
-//물리 적용, 벽에 못통과 하게 만들기
-void ApplyPhysics(const char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
-{
-
-	int player_Left = _pPlayer->GetX() - 1;
-	int player_Right = _pPlayer->GetX() + 1;
-
-	int player_iY = _pPlayer->GetY();
-
-	if (_cStage[player_iY][player_Left] == SBT_WALL)
-	{
-		_pPlayer->SetLeftBlock(true);
-	}
-	else
-	{
-		_pPlayer->SetLeftBlock(false);
-	}
-
-	if (_cStage[player_iY][player_Right] == SBT_WALL)
-	{
-		_pPlayer->SetRightBlock(true);
-	}
-	else
-	{
-		_pPlayer->SetRightBlock(false);
-	}
-}
-
-static void UpdateCoin(char(*_cStage)[g_iMAP_WIDTH], CPlayer* _pPlayer)
-{
-
-	int player_iX = _pPlayer->GetX();
-	int player_iY = _pPlayer->GetY();
-
-	//코인먹었는지 체크
-	if (_cStage[player_iY][player_iX] == SBT_COIN)
-	{
-		_cStage[player_iY][player_iX] = SBT_ROAD;
-		_pPlayer->PlusCoin();
-	}
+	
 }
 
 void CStage::Render()
@@ -151,6 +76,7 @@ void CStage::Render()
 	CPlayer* pPlayer = CObjectManager::GetInst()->GetPlayer();
 
 	int player_Coin = pPlayer->GetCoin();
+	int player_Life = pPlayer->GetLifeCount();
 
 	//플레이어의 x,y 좌표를 얻어온다
 	int player_iX = pPlayer->GetX();
@@ -182,8 +108,6 @@ void CStage::Render()
 		iClientWidth_end = g_iMAP_WIDTH;
 	}
 	
-
-
 	//세로 스크롤 멈춤
 	if (iClientHeight_start < 0)
 	{
@@ -204,36 +128,51 @@ void CStage::Render()
 			{
 				std::cout << "§";
 			}
-			else if (m_cStage[i][j] == SBT_WALL)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_WALL))
 			{
 				std::cout << "■";
 			}
-			else if (m_cStage[i][j] == SBT_ROAD)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_ROAD))
 			{
 				std::cout << "  ";
 			}
-			else if (m_cStage[i][j] == SBT_START)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_START))
 			{
 				std::cout << "☆";
 			}
-			else if (m_cStage[i][j] == SBT_END)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_END))
 			{
 				std::cout << "★";
 			}
-			else if (m_cStage[i][j] == SBT_COIN)
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_COIN))
 			{
 				std::cout << "◎";
 			}
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "coin : "<< player_Coin << std::endl;
-	std::cout << "Left : ← " << " Right : → " << std::endl;
-	std::cout << "Jump : space bar "<< std::endl;
 }
 
+eSTAGE_BLOCK_TYPE CStage::GetBlockByPos(const POINT& _pos) const
+{
+	return static_cast<eSTAGE_BLOCK_TYPE>(m_cStage[_pos.y][_pos.x]);
+}
 
+eSTAGE_BLOCK_TYPE CStage::GetBlockByXY(int _x, int _y) const
+{
+	eSTAGE_BLOCK_TYPE block = static_cast<eSTAGE_BLOCK_TYPE>(m_cStage[_y][_x]);
+	return block;
+}
 
+void CStage::SetBlockByPos(const POINT& _pos, const eSTAGE_BLOCK_TYPE& _block)
+{
+	m_cStage[_pos.y][_pos.x] = static_cast<char>(_block);
+}
+
+void CStage::SetBlockByXY(int _x, int _y, const eSTAGE_BLOCK_TYPE& _block)
+{
+	m_cStage[_y][_x] = static_cast<char>(_block);
+}
 
 
 
