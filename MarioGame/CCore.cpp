@@ -68,7 +68,6 @@ void CCore::Run()
 {
 	bool bSystemLoop = true;
 	bool bPlayLoop = true;
-
 	while (bSystemLoop)
 	{
 		system("cls");
@@ -94,29 +93,29 @@ void CCore::Run()
 		--iInput; //스테이지를 갖고있는 배열은 0번부터 시작하므로, 1 빼기
 		CMapManager::GetInst()->SetSelectStage(iInput);
 		CObjectManager::GetInst()->InitPlayerStartPos();
+		CStateManager::GetInst()->ResetGameState();
+		bPlayLoop = true;
 		while (bPlayLoop)
 		{
-			system("cls");
 			CStateManager::GetInst()->Update();
-			//TODO: 게임오버 안되는 버그 수정
 			eGAME_STATE gameState = CStateManager::GetInst()->GetGameState();
-			switch (gameState)
+			system("cls");
+			if (gameState == eGAME_STATE::GAME_OVER)
 			{
-			case eGAME_STATE::GAME_OVER:
-				bPlayLoop = false;
-				continue;
-				break;
-			case eGAME_STATE::GAME_STAGECLEAR:
-				bPlayLoop = false;
-				continue;
-				break;
-			case eGAME_STATE::GAME_RETRY:
-			default:
+				CStateManager::GetInst()->Render();
 				break;
 			}
-			CMapManager::GetInst()->Render();
-			CObjectManager::GetInst()->Update();
-			CObjectManager::GetInst()->GetPlayer()->Render();
+			else if (gameState == eGAME_STATE::GAME_STAGECLEAR)
+			{
+				CStateManager::GetInst()->Render();
+				break;
+			}
+			else if (gameState == eGAME_STATE::GAME_RETRY)
+			{
+				CMapManager::GetInst()->Render();
+				CObjectManager::GetInst()->Update();
+				CObjectManager::GetInst()->Render();
+			}
 			Sleep(100); //Sleep(밀리세컨드) 밀리세컨드 만큼 쉬기
 		}
 		CStateManager::GetInst()->ResetGameState();

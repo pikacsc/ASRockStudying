@@ -21,9 +21,9 @@ bool CStage::Init()
 	{
 		return false;
 	}
-	for (int i = 0; i <= g_iMAP_WIDTH; ++i)
+	for (int i = 0; i < g_iMAP_HEIGHT; ++i)
 	{
-		for (int j = 0; j < g_iMAP_HEIGHT; ++j)
+		for (int j = 0; j < g_iMAP_WIDTH; ++j)
 		{
 			if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_START))
 			{

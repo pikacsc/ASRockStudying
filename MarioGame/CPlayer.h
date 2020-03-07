@@ -25,6 +25,7 @@ public:
 	int		GetCoin() const;
 	void	PlusCoin();
 	void	MinusCoin();
+	void	ResetToStart(void);
 
 	bool	IsOnGround() const;
 	void	SetOnGround(bool _bOnGround);

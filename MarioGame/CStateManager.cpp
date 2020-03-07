@@ -7,7 +7,7 @@
 CStateManager* CStateManager::m_pInst = nullptr;
 
 CStateManager::CStateManager()
-	:m_bGameOver(false),m_bPlayerWin(false),m_eGameSate(eGAME_STATE::GAME_RETRY)
+	:m_eGameSate(eGAME_STATE::GAME_RETRY)
 {
 }
 
@@ -44,51 +44,72 @@ void CStateManager::Update()
 	POINT playerPos = CObjectManager::GetInst()->GetPlayer()->GetPos();
 	CStage* cStage = CMapManager::GetInst()->GetSelectStage();
 	POINT goalPos = cStage->GetGoalPos();
+	CPlayer* player = CObjectManager::GetInst()->GetPlayer();
 
 	//game over check
 	if (playerPos.y >= g_iMAP_HEIGHT)
 	{
-		m_bGameOver = true;
+		if (player->GetLifeCount() > 0)
+		{
+			player->MinusLife();
+			player->ResetToStart();
+			m_eGameSate = eGAME_STATE::GAME_RETRY;
+			return;
+		}
+		else
+		{
+			player->ResetToStart();
+			m_eGameSate = eGAME_STATE::GAME_OVER;
+			return;
+		}
 	}
 
 	//player win check
 	if (playerPos.x == goalPos.x && playerPos.y == goalPos.y)
 	{
-		m_bPlayerWin = true;
+		m_eGameSate = eGAME_STATE::GAME_STAGECLEAR;
+		printf("\nGoal!!!!\n");
 	}
 
 }
 
-static void RenderPlayerWin(void);
+static void RenderStageClear(void);
 static void RenderGameOver(void);
 
 
 void CStateManager::Render()
 {
-	if (IsPlayerWin())
+	if (m_eGameSate == eGAME_STATE::GAME_STAGECLEAR)
 	{
-		RenderPlayerWin();
+		int sec = g_iLoadingSec;
+		while (sec > 0)
+		{
+			system("cls");
+			RenderStageClear();
+			Sleep(1000);
+			--sec;
+		}
 	}
-	if (IsGameOver())
+	else if (m_eGameSate == eGAME_STATE::GAME_OVER)
 	{
-		RenderGameOver();
+		int sec = g_iLoadingSec;
+		while (sec > 0)
+		{
+			system("cls");
+			RenderGameOver();
+			Sleep(1000);
+			--sec;
+		}
 	}
 }
 
 
 void CStateManager::Run()
 {
+	Update();
+	Render();
 }
 
-bool CStateManager::IsPlayerWin()
-{
-	return m_bPlayerWin;
-}
-
-bool CStateManager::IsGameOver()
-{
-	return m_bGameOver;
-}
 
 eGAME_STATE CStateManager::GetGameState(void) const
 {
@@ -102,16 +123,15 @@ void CStateManager::SetGameState(const eGAME_STATE& _eGameState)
 
 void CStateManager::ResetGameState()
 {
-	m_bGameOver = false;
-	m_bPlayerWin = false;
+	m_eGameSate = eGAME_STATE::GAME_RETRY;
 }
 
-void RenderPlayerWin(void)
+static void RenderStageClear(void)
 {
-	std::cout << "Goal!!!!" << std::endl;
+	std::cout << "Goal! next stage!" << std::endl;
 }
 
-void RenderGameOver(void)
+static void RenderGameOver(void)
 {
 	std::cout << "Game Over" << std::endl;
 }

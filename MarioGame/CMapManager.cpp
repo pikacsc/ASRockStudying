@@ -71,7 +71,11 @@ void CMapManager::Update()
 
 void CMapManager::Render()
 {
-	if (CStateManager::GetInst()->IsPlayerWin() || CStateManager::GetInst()->IsGameOver())
+	if (CStateManager::GetInst()->GetGameState() == eGAME_STATE::GAME_OVER)
+	{
+		return;
+	}
+	if (CStateManager::GetInst()->GetGameState() == eGAME_STATE::GAME_STAGECLEAR)
 	{
 		return;
 	}

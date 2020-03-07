@@ -74,6 +74,13 @@ void CPlayer::MinusCoin()
 	m_iCoin--;
 }
 
+void CPlayer::ResetToStart(void)
+{
+	POINT startPos = CMapManager::GetInst()->GetSelectStage()->GetStartPos();
+	SetPos(startPos);
+	SetOnGround(true);
+}
+
 
 void CPlayer::SetPosByXY(int _iX, int _iY)
 {
@@ -123,7 +130,14 @@ void CPlayer::SetLifeCount(int _iLife)
 
 void CPlayer::MinusLife(void)
 {
-	--m_iLife;
+	if (m_iLife <= 0)
+	{
+		m_iLife = 0;
+	}
+	else
+	{
+		--m_iLife;
+	}
 }
 
 bool CPlayer::Init()

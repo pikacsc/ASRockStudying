@@ -42,9 +42,11 @@ CPlayer* CObjectManager::GetPlayer() const
 
 bool CObjectManager::Init()
 {
-	m_pPlayer = new CPlayer;
+	if (!m_pPlayer)
+	{
+		m_pPlayer = new CPlayer;
+	}
 	m_pPlayer->Init();
-
 	return true;
 }
 
@@ -53,8 +55,14 @@ void CObjectManager::Update()
 	m_pPlayer->Update();
 }
 
+void CObjectManager::Render()
+{
+	m_pPlayer->Render();
+}
+
 void CObjectManager::InitPlayerStartPos(void)
 {
 	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
 	m_pPlayer->SetPos(selectStage->GetStartPos());
+	m_pPlayer->SetLifeCount(g_iLife_Default);
 }
