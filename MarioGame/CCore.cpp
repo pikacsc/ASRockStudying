@@ -71,27 +71,27 @@ void CCore::Run()
 	while (bSystemLoop)
 	{
 		system("cls");
-		int iInput = 0;
+		int iInputStageNumb = 0;
 		std::cout << "Stage Select" << std::endl;
 		std::cout << "1. Stage1" << std::endl;
 		std::cout << "2. Stage2" << std::endl;
 		std::cout << "3. Stage3" << std::endl;
 		std::cout << "0. Quit" << std::endl << ">>";
-		std::cin >> iInput;
+		std::cin >> iInputStageNumb;
 
-		if (iInput > 3)
+		if (iInputStageNumb > 3)
 		{
 			continue;
 		}
 
-		if (iInput == 0)
+		if (iInputStageNumb == 0)
 		{
 			break;
 		}
 
 
-		--iInput; //스테이지를 갖고있는 배열은 0번부터 시작하므로, 1 빼기
-		CMapManager::GetInst()->SetSelectStage(iInput);
+		--iInputStageNumb; //스테이지를 갖고있는 배열은 0번부터 시작하므로, 1 빼기
+		CMapManager::GetInst()->SetSelectStage(iInputStageNumb);
 		CObjectManager::GetInst()->InitPlayerStartPos();
 		CStateManager::GetInst()->ResetGameState();
 		bPlayLoop = true;
@@ -107,11 +107,19 @@ void CCore::Run()
 			}
 			else if (gameState == eGAME_STATE::GAME_STAGECLEAR)
 			{
+				if (iInputStageNumb > 2)
+				{
+					printf("Congratulation! all clear!");
+					break;
+				}
 				CStateManager::GetInst()->Render();
-				break;
+				CMapManager::GetInst()->SetSelectStage(++iInputStageNumb);
+				CObjectManager::GetInst()->InitPlayerStartPos();
+				CStateManager::GetInst()->ResetGameState();
 			}
 			else if (gameState == eGAME_STATE::GAME_RETRY)
 			{
+				CMapManager::GetInst()->Update();
 				CMapManager::GetInst()->Render();
 				CObjectManager::GetInst()->Update();
 				CObjectManager::GetInst()->Render();

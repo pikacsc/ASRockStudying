@@ -13,6 +13,7 @@ private:
 	bool	m_bOnGround;
 	bool	m_bLeftBlock;
 	bool	m_bRightBlock;
+	bool	m_bBulletFire;
 	int		m_iLife;
 public:
 	int		GetX() const;
@@ -26,6 +27,7 @@ public:
 	void	PlusCoin();
 	void	MinusCoin();
 	void	ResetToStart(void);
+	void	Fire(void);
 
 	bool	IsOnGround() const;
 	void	SetOnGround(bool _bOnGround);

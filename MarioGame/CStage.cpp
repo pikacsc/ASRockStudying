@@ -1,11 +1,18 @@
 ﻿#include "CStage.h"
 #include "CFileStream.h"
 #include "CPlayer.h"
+#include "CBullet.h"
 #include "CObjectManager.h"
+#include "CMonster.h"
 
 
 CStage::CStage()
-	:m_cStage{ 0 }, m_startPOS(POINT{ 0,0 }), m_goalPOS(POINT{ 0,0 })
+	:m_cStage{ 0 }, 
+	m_startPOS(POINT{ 0,0 }), 
+	m_goalPOS(POINT{ 0,0 }), 
+	m_pMonsterArray(nullptr), 
+	m_iMonsterCount(0),
+	m_iMonsterArrayCount(0)
 {
 	Init();
 }
@@ -13,6 +20,12 @@ CStage::CStage()
 CStage::~CStage()
 {
 	printf("\nCStage() : Destroyed\n");
+	for (int i = 0; i < m_iMonsterCount; ++i)
+	{
+		delete m_pMonsterArray[i];
+		m_pMonsterArray[i] = nullptr;
+	}
+	delete[] m_pMonsterArray;
 }
 
 bool CStage::Init()
@@ -32,6 +45,13 @@ bool CStage::Init()
 			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_END))
 			{
 				m_goalPOS = POINT{ j,i };
+			}
+			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_MONSTER))
+			{
+				CreateMonster(j, i);
+
+				// 몬스터 위치를 체크하여 몬스터 생성만 하고 SBT_ROAD로 실제 맵을 바꿔준다.
+				m_cStage[i][j] = static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_ROAD);
 			}
 		}
 	}
@@ -59,7 +79,11 @@ bool CStage::ReadFile(const char* _pFileName)
 
 void CStage::Update()
 {
-	
+	for (int i = 0; i < m_iMonsterCount; ++i)
+	{
+		m_pMonsterArray[i]->Update();
+	}
+
 }
 
 void CStage::Render()
@@ -74,7 +98,7 @@ void CStage::Render()
 	4 : 코인
 	*/
 	CPlayer* pPlayer = CObjectManager::GetInst()->GetPlayer();
-
+	
 	int player_Coin = pPlayer->GetCoin();
 	int player_Life = pPlayer->GetLifeCount();
 
@@ -127,6 +151,16 @@ void CStage::Render()
 			if (i == player_iY  && j == player_iX)
 			{
 				std::cout << "§";
+			}
+			// 현재위치에 총알이 있을 경우 총알로 출력한다.
+			else if (CObjectManager::GetInst()->CheckBullet(j, i))
+			{
+				std::cout << "™";
+			}
+			// 몬스터가 현재 위치에 있다면 몬스터로 출력한다.
+			else if (CheckMonster(j, i))
+			{
+				std::cout << "◆";
 			}
 			else if (m_cStage[i][j] == static_cast<char>(eSTAGE_BLOCK_TYPE::SBT_WALL))
 			{
@@ -184,4 +218,90 @@ POINT CStage::GetGoalPos(void) const
 POINT CStage::GetStartPos(void) const
 {
 	return m_startPOS;
+}
+
+CMonster* CStage::CreateMonster(int _iX, int _iY)
+{
+	// 배열이 동적할당 되지 않았을 경우 동적할당 해준다.
+	if (!m_pMonsterArray)
+	{
+		m_iMonsterArrayCount = 3;
+		m_pMonsterArray = new CMonster * [m_iMonsterArrayCount];
+	}
+
+	// 만약 몬스터가 꽉 차있을 경우 배열을 늘려준다.
+	if (m_iMonsterCount == m_iMonsterArrayCount)
+	{
+		//공간을 늘려서 할당해준다. 2배만큼 공간을 늘려준다.
+		m_iMonsterArrayCount *= 2;
+		CMonster** ppArray = new CMonster * [m_iMonsterArrayCount];
+
+		// 기존에 있는 주소 정보를 이배열로 옮겨준다.
+		// memcpy : 메모리 복사 함수이다.
+		//1번인자에 들어간 메모리 주소에 2번인자에 들어간 메모리 주소로부터
+		//3번인자에 들어간 바이트 수만큼 메모리를 복사한다.
+		//몬스터가 꽉찼다면 기존 배열은 이미 가득 차있다.
+		//그래서 위에서 공간을 2배만큼 동적 배열로 할당해주고
+		//아래에서 새로 할당한 공간이 예를들어 20개 라면 기존 공간은
+		//10개이다. 기존 공간의(2번인자) 동적할당된 메모리 주소들을
+		//새로 할당된 공간으로 10개만큼 복사해주는 것이다.
+		memcpy(ppArray, m_pMonsterArray, sizeof(CMonster*) * m_iMonsterCount);
+		delete[] m_pMonsterArray;
+		m_pMonsterArray = ppArray;
+	}
+
+	// 실제 몬스터 객체를 할당한다.
+	CMonster* pMonster = new CMonster;
+
+	if (!pMonster->Init())
+	{
+		delete pMonster;
+		pMonster = nullptr;
+	}
+
+	// 몬스터 위치정보를 설정한다.
+	pMonster->SetPosByXY(_iX, _iY);
+
+	// 몬스터 배열에 넣어준다.
+	m_pMonsterArray[m_iMonsterCount] = pMonster;
+	++m_iMonsterCount;
+
+	return pMonster;
+}
+
+bool CStage::CheckMonster(int _iX, int _iY)
+{
+	for (int i = 0; i < m_iMonsterCount; ++i)
+	{
+		if (m_pMonsterArray[i]->GetPos().x == _iX &&
+			m_pMonsterArray[i]->GetPos().y == _iY)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CStage::GetMonsterCount(void) const
+{
+	return m_iMonsterCount;
+}
+
+CMonster* CStage::GetMonster(int idx) const
+{
+	return m_pMonsterArray[idx];
+}
+
+void CStage::DeleteMonster(int _idx)
+{
+	delete m_pMonsterArray[_idx];
+
+	for (int i = _idx; i < m_iMonsterCount - 1; ++i)
+	{
+		m_pMonsterArray[i] = m_pMonsterArray[i + 1];
+	}
+	m_pMonsterArray[m_iMonsterCount - 1] = nullptr;
+
+	--m_iMonsterCount;
 }

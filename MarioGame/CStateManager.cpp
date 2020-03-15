@@ -81,7 +81,7 @@ void CStateManager::Render()
 {
 	if (m_eGameSate == eGAME_STATE::GAME_STAGECLEAR)
 	{
-		int sec = g_iLoadingSec;
+		int sec = g_iLOADING_SEC;
 		while (sec > 0)
 		{
 			system("cls");
@@ -92,7 +92,7 @@ void CStateManager::Render()
 	}
 	else if (m_eGameSate == eGAME_STATE::GAME_OVER)
 	{
-		int sec = g_iLoadingSec;
+		int sec = g_iLOADING_SEC;
 		while (sec > 0)
 		{
 			system("cls");

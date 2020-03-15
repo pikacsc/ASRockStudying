@@ -1,5 +1,7 @@
 #include "CPlayer.h"
+#include "CBullet.h"
 #include "CMapManager.h"
+#include "CObjectManager.h"
 #include "CStage.h"
 #include "value.h"
 
@@ -81,6 +83,11 @@ void CPlayer::ResetToStart(void)
 	SetOnGround(true);
 }
 
+void CPlayer::Fire(void)
+{
+
+}
+
 
 void CPlayer::SetPosByXY(int _iX, int _iY)
 {
@@ -142,14 +149,13 @@ void CPlayer::MinusLife(void)
 
 bool CPlayer::Init()
 {
-	m_iLife = g_iLife_Default;
+	m_iLife = g_iLIFE_DEFAULT;
 	m_iCoin = 0;
 	return true;
 }
 
 void CPlayer::Update()
 {
-	CStage* selectStage = CMapManager::GetInst()->GetSelectStage();
 
 	//중력작용, 플레이어 밑에 땅이 없을 경우 플레이어 y축을 ++
 	if (!m_bOnGround)
@@ -197,6 +203,15 @@ void CPlayer::Update()
 			m_tPos.y = 0;
 		}
 	}
+
+	if (GetAsyncKeyState(VK_LCONTROL) & 0x8000 && m_bBulletFire)
+	{
+		//플레이어 우측으로 한칸 위치
+		POINT tPos = m_tPos;
+		tPos.x++;
+		CObjectManager::GetInst()->CreateBullet(tPos);
+	}
+
 
 	UpdateCoin(*this);
 	ApplyPhysics(*this);

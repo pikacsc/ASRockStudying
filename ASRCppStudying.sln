@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Operator", "Operator\Operat
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MarioGame", "MarioGame\MarioGame.vcxproj", "{89A7F43A-A7EF-429D-8A58-D76C813C3A45}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Inheritance", "Inheritance\Inheritance.vcxproj", "{A52277CC-5E73-4B13-BF67-B25024B6B846}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{89A7F43A-A7EF-429D-8A58-D76C813C3A45}.Release|x64.Build.0 = Release|x64
 		{89A7F43A-A7EF-429D-8A58-D76C813C3A45}.Release|x86.ActiveCfg = Release|Win32
 		{89A7F43A-A7EF-429D-8A58-D76C813C3A45}.Release|x86.Build.0 = Release|Win32
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Debug|x64.ActiveCfg = Debug|x64
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Debug|x64.Build.0 = Debug|x64
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Debug|x86.ActiveCfg = Debug|Win32
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Debug|x86.Build.0 = Debug|Win32
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Release|x64.ActiveCfg = Release|x64
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Release|x64.Build.0 = Release|x64
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Release|x86.ActiveCfg = Release|Win32
+		{A52277CC-5E73-4B13-BF67-B25024B6B846}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

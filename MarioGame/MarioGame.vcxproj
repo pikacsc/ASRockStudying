@@ -138,9 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CBullet.cpp" />
     <ClCompile Include="CCore.cpp" />
     <ClCompile Include="CFileStream.cpp" />
     <ClCompile Include="CMapManager.cpp" />
+    <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CObjectManager.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CStage.cpp" />
@@ -149,9 +151,11 @@
     <ClCompile Include="value.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CBullet.h" />
     <ClInclude Include="CCore.h" />
     <ClInclude Include="CFileStream.h" />
     <ClInclude Include="CMapManager.h" />
+    <ClInclude Include="CMonster.h" />
     <ClInclude Include="CObjectManager.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CStage.h" />

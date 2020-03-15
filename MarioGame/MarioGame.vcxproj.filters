@@ -60,6 +60,12 @@
     <ClCompile Include="CStateManager.cpp">
       <Filter>04. State</Filter>
     </ClCompile>
+    <ClCompile Include="CBullet.cpp">
+      <Filter>03. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CMonster.cpp">
+      <Filter>03. Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CStage.h">
@@ -85,6 +91,12 @@
     </ClInclude>
     <ClInclude Include="CStateManager.h">
       <Filter>04. State</Filter>
+    </ClInclude>
+    <ClInclude Include="CBullet.h">
+      <Filter>03. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="CMonster.h">
+      <Filter>03. Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

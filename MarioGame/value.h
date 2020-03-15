@@ -10,8 +10,10 @@ enum constants
 	g_iSTAGENAME_MAX = 50,
 	g_iSTART_POS_X = 4,
 	g_iSTART_POS_Y = 8,
-	g_iLife_Default = 3,
-	g_iLoadingSec = 3
+	g_iLIFE_DEFAULT = 3,
+	g_iLOADING_SEC = 3,
+	g_iBULLET_COUNT_MAX = 10,
+	g_iBULLET_RANGE_DEFAULT = 8
 };
 
 enum class eSTAGE_BLOCK_TYPE 
@@ -20,7 +22,8 @@ enum class eSTAGE_BLOCK_TYPE
 	SBT_ROAD = '1',
 	SBT_START = '2',
 	SBT_END = '3',
-	SBT_COIN = '4'
+	SBT_COIN = '4',
+	SBT_MONSTER = '5'
 };
 
 enum class eGAME_STATE
@@ -33,4 +36,10 @@ enum class eGAME_STATE
 
 	//head to next level state : GAME_STAGECLEAR
 	GAME_STAGECLEAR = 2
+};
+
+enum eMONSTER_DIR
+{
+	MON_DIR_LEFT = -1,
+	MON_DIR_RIGHT = 1
 };

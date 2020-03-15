@@ -66,7 +66,7 @@ bool CMapManager::Init()
 
 void CMapManager::Update()
 {
-	//m_pStage[m_iSelectStageNum]->Update();
+	m_pStage[m_iSelectStageNum]->Update();
 }
 
 void CMapManager::Render()
